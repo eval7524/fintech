@@ -53,7 +53,7 @@
 - FE : X
 - DB :
     - 개발 / 학습 : H2
-    - 확장 : MySQL
+    - 확장 : MySQLg
 - API 설계/테스트 : Postman
 - API 문서화 : Swagger UI
 
