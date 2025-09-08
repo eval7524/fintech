@@ -47,9 +47,9 @@
 - 로그인한 사용자는 본인의 계좌에서 다른 계좌로 송금할 수 있습니다.
     - 제약 조건 :
     - 잔액 부족, 없는 계좌, 본인 계좌로 송금의 경우 예외처리 됩니다.
-    - 입금(DEPOSIT) : 반드시 입금받는 계좌(to_account_id)는 존재해야 합니다. 하지만, 입금하는 계좌(from_account_id)는 NULL 입니다.
-    - 출금(WITHDRAW) : 반드시 출금하는 계좌(from_account_id)는 존재해야 합니다. 하지만, 출금받는 계좌(to_account_id)는 NULL 입니다.
-    - 송금(TRANSFER) : 출금하는 계좌(from_account_id)와 입금받는 계좌(to_account_id)는 모두 존재해야하고, 서로 달라야 합니다.
+    - 입금 : 반드시 입금받는 계좌(to_account_id)는 존재해야 합니다. 하지만, 입금하는 계좌(from_account_id)는 NULL 입니다.
+    - 출금 : 반드시 출금하는 계좌(from_account_id)는 존재해야 합니다. 하지만, 출금받는 계좌(to_account_id)는 NULL 입니다.
+    - 송금 : 출금하는 계좌(from_account_id)와 입금받는 계좌(to_account_id)는 모두 존재해야하고, 서로 달라야 합니다.
 - 로그인한 사용자는 본인의 계좌에서 송금 이력을 확인할 수 있습니다.
     - 거래 내역 조회시 Paination을 지원해야 합니다.
     - 정렬은 거래 발생 시각(timestamp) 기준 내림차 순으로 합니다.
