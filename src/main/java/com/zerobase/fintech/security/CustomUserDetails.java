@@ -10,7 +10,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
-public record CustomUserDetails(Member member) implements UserDetails {
+@Getter
+@RequiredArgsConstructor
+public class CustomUserDetails() implements UserDetails {
+
+  private final Member member;
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(() -> member.getRole().toString());
