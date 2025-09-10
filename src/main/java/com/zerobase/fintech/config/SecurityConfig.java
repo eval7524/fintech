@@ -18,12 +18,14 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, FrameworkServlet frameworkServlet) throws Exception {
     http
+        // REST API는 csrf 토큰이 필요 없음 -> 비활성화
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/h2-console/**").permitAll()
+            .requestMatchers("/api/auth/**").permitAll() //회원가입, 로그인은 인증 없이 접근 허용
+            .requestMatchers("/h2-console/**").permitAll() // h2-console 접근 허용
             .anyRequest().authenticated()
         )
+        // Spring Security 가 인증이나 권한 여부 문제로 요청을 막을 때 줄 응답 정하기
         .exceptionHandling(e -> e
             .authenticationEntryPoint((request, response, authException) -> {
               response.setContentType("application/json;charset=UTF-8");
@@ -42,6 +44,7 @@ public class SecurityConfig {
   }
 
 
+  // Spring Security 에서 비밀번호 암호화 하기 위해 사용, @Bean 등록 이유는 프로젝트 어디서든 @Autowired나 생성자 주입으로 사용 가능하게 하기위해서
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
