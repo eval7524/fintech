@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, String>> handleException(Exception e) {
     log.error("예외 발생 : {}", e.getMessage());
@@ -56,6 +57,13 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(InvalidCredentialsException.class)
   public ResponseEntity<Map<String, String>> handlerInvalidCredentialsException(InvalidCredentialsException e) {
+    Map<String, String> body = new HashMap<>();
+    body.put("ERROR", e.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+  }
+
+  @ExceptionHandler(UserNotLoggedInException.class)
+  public ResponseEntity<Map<String, String>> handlerUserNotLoggedInException(UserNotLoggedInException e) {
     Map<String, String> body = new HashMap<>();
     body.put("ERROR", e.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
