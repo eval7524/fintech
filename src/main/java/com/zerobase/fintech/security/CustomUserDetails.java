@@ -4,20 +4,13 @@ package com.zerobase.fintech.security;
 import com.zerobase.fintech.domain.entity.Member;
 import java.util.Collection;
 import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class CustomUserDetails implements UserDetails {
 
-  private final Member member;
-  public CustomUserDetails(Member member) {
-    this.member = member;
-  }
-  public Member getMember() {
-    return member;
-  }
-
-
+public record CustomUserDetails(Member member) implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(() -> member.getRole().toString());
