@@ -2,7 +2,10 @@ package com.zerobase.fintech.controller;
 
 import com.zerobase.fintech.domain.dto.auth.SignUpRequest;
 import com.zerobase.fintech.domain.dto.auth.SignUpResponse;
+import com.zerobase.fintech.domain.dto.login.LoginRequest;
+import com.zerobase.fintech.domain.dto.login.LoginResponse;
 import com.zerobase.fintech.service.AuthService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +25,22 @@ public class AuthController {
 
   @PostMapping("/signup")
   public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) {
-    log.info("회원가입 요청 : username = {}, phone = {}", request.getUsername(), request.getPhoneNumber());
     SignUpResponse response = authService.register(request);
-    log.info("회원가입 완료 : memberId = {}", response.getId());
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
+    Object response = authService.login(request, session);
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<String> logout(HttpSession session) {
+    if(session == null || session.getAttribute("username") == null) {
+      return ResponseEntity.ok("이미 로그아웃 상태입니다.");
+    }
+    authService.logout(session);
+    return ResponseEntity.ok("로그아웃 완료");
   }
 }

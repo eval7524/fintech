@@ -3,12 +3,16 @@ package com.zerobase.fintech.service;
 
 import com.zerobase.fintech.domain.dto.auth.SignUpRequest;
 import com.zerobase.fintech.domain.dto.auth.SignUpResponse;
+import com.zerobase.fintech.domain.dto.login.LoginRequest;
+import com.zerobase.fintech.domain.dto.login.LoginResponse;
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.domain.entity.Role;
 import com.zerobase.fintech.domain.repository.MemberRepository;
+import com.zerobase.fintech.exception.InvalidCredentialsException;
 import com.zerobase.fintech.exception.PhoneNumberAlreadyUsedException;
 import com.zerobase.fintech.exception.UserAlreadyExistsException;
-import lombok.Builder;
+import com.zerobase.fintech.exception.UserNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,5 +53,41 @@ public class AuthService {
     log.info("회원 가입 완료 : memberId = {}, username = {}", savedMember.getId(), savedMember.getUsername());
 
     return new SignUpResponse(savedMember.getId(), savedMember.getUsername(), "회원가입이 완료되었습니다.");
+  }
+
+  @Transactional(readOnly = true)
+  public LoginResponse login(LoginRequest request, HttpSession session) {
+    if (session == null) {
+      throw new IllegalStateException("세션이 생성되지 않았습니다.");
+    }
+
+    log.info("로그인 시도 : username = {}", request.getUsername());
+
+    Member member = memberRepository.findByUsername(request.getUsername())
+        .orElseThrow(() -> new UserNotFoundException());
+
+    if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+      log.warn("비밀번호 불일치 : username = {}", request.getUsername());
+      throw new InvalidCredentialsException();
+    }
+
+    Object sessionUsername = session.getAttribute("username");
+    if (sessionUsername == null) {
+      session.setAttribute("username", member.getUsername());
+      log.info("로그인 성공 : username = {}", member.getUsername());
+      return new LoginResponse("SESSION_ACTIVE", member.getUsername(), "LOGIN_SUCCESS");
+    }
+
+    log.info("이미 로그인 상태입니다. username = {}", member.getUsername());
+    return new LoginResponse("SESSION_ACTIVE", member.getUsername(), "ALREADY_LOGGED_IN");
+  }
+
+  public void logout(HttpSession session) {
+    if(session == null || session.getAttribute("username") == null) {
+      log.info("이미 로그아웃 상태입니다.");
+      return;
+    }
+    session.invalidate();
+    log.info("로그아웃 완료");
   }
 }
