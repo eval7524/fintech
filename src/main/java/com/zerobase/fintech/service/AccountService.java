@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,26 +33,11 @@ public class AccountService {
   private final AccountRepository accountRepository;
   private final AuthService authService;
 
-  //로그인 유무 확인
-  public Member getCurrentMember() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null
-        || !authentication.isAuthenticated()
-        || authentication instanceof AnonymousAuthenticationToken) {
-      throw new UserNotLoggedInException();
-    }
-    Object principal = authentication.getPrincipal();
-    if (!(principal instanceof CustomUserDetails)) {
-      throw new UserNotLoggedInException();
-    }
-    CustomUserDetails customUserDetails = (CustomUserDetails) principal;
-    return customUserDetails.getMember();
-  }
 
   //계좌 생성
   @Transactional
   public AccountResponse createAccount() {
-    Member member = getCurrentMember();
+    Member member = authService.getCurrentMember();
     log.info("계좌 생성 시도");
 
     //계좌번호 생성
@@ -87,21 +73,21 @@ public class AccountService {
 
   //계좌 조회, 페이징 처리
   public Page<AccountResponse> findAllAccounts(Pageable pageable) {
-    Long memberId = getCurrentMember().getId();
+    Member member = authService.getCurrentMember();
     Pageable sortedPageable = PageRequest.of(
         pageable.getPageNumber(),
         pageable.getPageSize(),
-        Sort.by(Sort.Direction.DESC, "createdAt")
+        Sort.by(Direction.DESC, "createdAt")
     );
-    log.info("계좌 전체 조회 : username = {}", getCurrentMember().getUsername());
-    return accountRepository.findAllByMemberId(memberId, sortedPageable).map(AccountResponse::fromEntity);
+    log.info("계좌 전체 조회 : username = {}", authService.getCurrentMember().getUsername());
+    return accountRepository.findAllByMemberId(member.getId(), sortedPageable).map(AccountResponse::fromEntity);
   }
 
   public AccountResponse findAccountById(Long accountId) {
-    Long memberId = getCurrentMember().getId();
-    Account account = accountRepository.findByIdAndMemberId(accountId, memberId)
+    Member member = authService.getCurrentMember();
+    Account account = accountRepository.findByIdAndMemberId(accountId, member.getId())
         .orElseThrow(() -> new AccountNotFoundException());
-    log.info("계좌 단건 조회 : accountId = {}, username = {}", accountId, getCurrentMember().getUsername());
+    log.info("계좌 단건 조회 : accountId = {}, username = {}", accountId, authService.getCurrentMember().getUsername());
     return AccountResponse.fromEntity(account);
   }
 }
