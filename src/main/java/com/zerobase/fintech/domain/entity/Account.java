@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -17,7 +19,9 @@ import lombok.ToString;
 @Entity
 @Getter
 @ToString
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Account {
 
   @Id
@@ -33,6 +37,7 @@ public class Account {
 
   @Column(nullable = false)
   private BigDecimal balance = BigDecimal.valueOf(0.00);
+
 
   //계좌 생성일
   @Column(nullable = false)

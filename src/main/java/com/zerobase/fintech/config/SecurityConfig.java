@@ -1,16 +1,21 @@
 package com.zerobase.fintech.config;
 
+import com.zerobase.fintech.security.AccountAuthLoggingFilter;
 import com.zerobase.fintech.security.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.FrameworkServlet;
 
 @Configuration
@@ -20,20 +25,34 @@ public class SecurityConfig {
 
   private final CustomUserDetailsService customUserDetailsService;
 
+
   @Bean
-  public UserDetailsService userDetailsService() {
-    return customUserDetailsService;
+  public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+    AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
+    auth.userDetailsService(customUserDetailsService)
+        .passwordEncoder(passwordEncoder());
+    return auth.build();
+  }
+
+  @Bean
+  public AccountAuthLoggingFilter accountAuthLoggingFilter() {
+    return new AccountAuthLoggingFilter();
   }
 
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, FrameworkServlet frameworkServlet) throws Exception {
     http
+        .addFilterBefore(accountAuthLoggingFilter(), UsernamePasswordAuthenticationFilter.class)
         // REST API는 csrf 토큰이 필요 없음 -> 비활성화
         .csrf(csrf -> csrf.disable())
+        .sessionManagement(session -> session
+            .maximumSessions(1) // 한 계정당 동시 접속 가능한 세션 수 1
+            .maxSessionsPreventsLogin(true)) // 이미 로그인된 세션이 있을 때 새로운 로그인 시도 차단
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll() //회원가입, 로그인은 인증 없이 접근 허용
             .requestMatchers("/h2-console/**").permitAll() // h2-console 접근 허용
+            .requestMatchers("/api/accounts/**").authenticated()
             .anyRequest().authenticated()
         )
         // Spring Security 가 인증이나 권한 여부 문제로 요청을 막을 때 줄 응답 정하기
@@ -51,6 +70,7 @@ public class SecurityConfig {
         )
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
         .formLogin(form -> form.disable());
+
     return http.build();
   }
 
