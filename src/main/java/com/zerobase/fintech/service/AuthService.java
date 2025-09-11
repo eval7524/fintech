@@ -12,10 +12,19 @@ import com.zerobase.fintech.exception.InvalidCredentialsException;
 import com.zerobase.fintech.exception.PhoneNumberAlreadyUsedException;
 import com.zerobase.fintech.exception.UserAlreadyExistsException;
 import com.zerobase.fintech.exception.UserNotFoundException;
-import jakarta.servlet.http.HttpSession;
+import com.zerobase.fintech.security.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,12 +65,16 @@ public class AuthService {
   }
 
   @Transactional(readOnly = true)
-  public LoginResponse login(LoginRequest request, HttpSession session) {
-    if (session == null) {
-      throw new IllegalStateException("세션이 생성되지 않았습니다.");
-    }
-
+  public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) {
     log.info("로그인 시도 : username = {}", request.getUsername());
+
+
+    Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+    if(currentAuth != null && currentAuth.isAuthenticated()
+    && !(currentAuth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+      log.info("이미 로그인 상태입니다. username = {}", currentAuth.getName());
+      return new LoginResponse("SESSION_ACTIVE", currentAuth.getName(), "ALREADY_LOGGED_IN");
+    }
 
     Member member = memberRepository.findByUsername(request.getUsername())
         .orElseThrow(() -> new UserNotFoundException());
@@ -71,23 +84,33 @@ public class AuthService {
       throw new InvalidCredentialsException();
     }
 
-    Object sessionUsername = session.getAttribute("username");
-    if (sessionUsername == null) {
-      session.setAttribute("username", member.getUsername());
-      log.info("로그인 성공 : username = {}", member.getUsername());
-      return new LoginResponse("SESSION_ACTIVE", member.getUsername(), "LOGIN_SUCCESS");
-    }
+    CustomUserDetails userDetails = new CustomUserDetails(member);
 
-    log.info("이미 로그인 상태입니다. username = {}", member.getUsername());
-    return new LoginResponse("SESSION_ACTIVE", member.getUsername(), "ALREADY_LOGGED_IN");
+    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    SecurityContext context = SecurityContextHolder.createEmptyContext();
+    context.setAuthentication(authentication);
+    SecurityContextHolder.setContext(context);
+
+    httpRequest.getSession(true).setAttribute(
+        HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+        context
+    );
+
+    SecurityContextHolder.setContext(context);
+
+
+    log.info("로그인 성공 : username = {}", member.getUsername());
+    return new LoginResponse("SESSION_ACTIVE", member.getUsername(), "LOGIN_SUCCESS");
   }
 
-  public void logout(HttpSession session) {
-    if(session == null || session.getAttribute("username") == null) {
-      log.info("이미 로그아웃 상태입니다.");
-      return;
+  public void logout(HttpServletRequest request, HttpServletResponse response) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+      new SecurityContextLogoutHandler().logout(request, response, authentication);
+      log.info("로그아웃 완료 : username = {}", authentication.getName());
+    } else {
+      log.info("이미 로그아웃된 상태입니다.");
     }
-    session.invalidate();
-    log.info("로그아웃 완료");
   }
 }
