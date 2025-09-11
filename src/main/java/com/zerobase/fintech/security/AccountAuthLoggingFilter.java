@@ -23,17 +23,25 @@ public class AccountAuthLoggingFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
-    if(request.getRequestURI().startsWith("/api/accounts")) {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
-        log.warn("비로그인 사용자 계좌 접근 시도 : {}", request.getRequestURI());
+    String uri = request.getRequestURI();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if(authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+      if(uri.startsWith("/api/accounts")) {
+        if(uri.equals("/api/accounts")) {
+          log.warn("비로그인 사용자 계좌 조회 시도 : uri = {}", uri);
+        } else if (uri.equals("/api/accounts/create")) {
+          log.warn("비로그인 사용자 계좌 생성 시도 : uri = {}", uri);
+        } else {
+          log.warn("비로그인 사용자 계좌 접근 시도 : uri = {}, ", uri);
+        }
+
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write("{\"error\":\"인증 필요: 로그인하세요.\"}");
         return;
       }
     }
-
     filterChain.doFilter(request, response);
   }
 }

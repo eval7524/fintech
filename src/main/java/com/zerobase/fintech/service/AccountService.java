@@ -4,13 +4,20 @@ import com.zerobase.fintech.domain.dto.account.AccountResponse;
 import com.zerobase.fintech.domain.entity.Account;
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.domain.repository.AccountRepository;
+import com.zerobase.fintech.exception.AccountNotFoundException;
 import com.zerobase.fintech.exception.UserNotLoggedInException;
 import com.zerobase.fintech.security.CustomUserDetails;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,9 +47,11 @@ public class AccountService {
     CustomUserDetails customUserDetails = (CustomUserDetails) principal;
     return customUserDetails.getMember();
   }
+
   //계좌 생성
   @Transactional
-  public AccountResponse createAccount(Member member) {
+  public AccountResponse createAccount() {
+    Member member = getCurrentMember();
     log.info("계좌 생성 시도");
 
     //계좌번호 생성
@@ -65,6 +74,7 @@ public class AccountService {
         savedAccount.getMember().getName(), savedAccount.getMember().getId());
   }
 
+  //계좌 번호 생성
   private String generateAccountNumber() {
     String bankCode = String.format("%03d", ThreadLocalRandom.current().nextInt(1, 1000));
     String body = String.format("%08d", ThreadLocalRandom.current().nextInt(10000000, 100000000));
@@ -73,5 +83,25 @@ public class AccountService {
     int checkSum = combined.chars().map(Character::getNumericValue).sum() % 10;
 
     return String.format("%s-%s-%d", bankCode, body, checkSum);
+  }
+
+  //계좌 조회, 페이징 처리
+  public Page<AccountResponse> findAllAccounts(Pageable pageable) {
+    Long memberId = getCurrentMember().getId();
+    Pageable sortedPageable = PageRequest.of(
+        pageable.getPageNumber(),
+        pageable.getPageSize(),
+        Sort.by(Sort.Direction.DESC, "createdAt")
+    );
+    log.info("계좌 전체 조회 : username = {}", getCurrentMember().getUsername());
+    return accountRepository.findAllByMemberId(memberId, sortedPageable).map(AccountResponse::fromEntity);
+  }
+
+  public AccountResponse findAccountById(Long accountId) {
+    Long memberId = getCurrentMember().getId();
+    Account account = accountRepository.findByIdAndMemberId(accountId, memberId)
+        .orElseThrow(() -> new AccountNotFoundException());
+    log.info("계좌 단건 조회 : accountId = {}, username = {}", accountId, getCurrentMember().getUsername());
+    return AccountResponse.fromEntity(account);
   }
 }

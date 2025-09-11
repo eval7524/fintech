@@ -36,7 +36,7 @@ class AccountServiceTest {
     Mockito.when(accountRepository.save(Mockito.any(Account.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
-    AccountResponse response = accountService.createAccount(member);
+    AccountResponse response = accountService.createAccount();
 
     assertNotNull(response.getAccountNumber());
     assertEquals(BigDecimal.valueOf(0.0), response.getBalance());

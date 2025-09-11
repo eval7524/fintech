@@ -1,6 +1,7 @@
 package com.zerobase.fintech.domain.dto.account;
 
 
+import com.zerobase.fintech.domain.entity.Account;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,13 @@ public class AccountResponse {
   private String owner;
   private Long memberId;
 
-
+  public static AccountResponse fromEntity(Account account) {
+    return new AccountResponse(
+        account.getAccountNumber(),
+        account.getBalance(),
+        account.getCreatedAt(),
+        account.getMember().getUsername(),
+        account.getMember().getId()
+    );
+  }
 }
