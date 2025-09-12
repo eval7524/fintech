@@ -1,21 +1,18 @@
 package com.zerobase.fintech.config;
 
-import com.zerobase.fintech.security.AccountAuthLoggingFilter;
+import com.zerobase.fintech.security.CustomAuthenticationEntryPoint;
 import com.zerobase.fintech.security.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.FrameworkServlet;
 
 @Configuration
@@ -34,16 +31,11 @@ public class SecurityConfig {
     return auth.build();
   }
 
-  @Bean
-  public AccountAuthLoggingFilter accountAuthLoggingFilter() {
-    return new AccountAuthLoggingFilter();
-  }
-
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, FrameworkServlet frameworkServlet) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, FrameworkServlet frameworkServlet,
+      CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
     http
-        .addFilterBefore(accountAuthLoggingFilter(), UsernamePasswordAuthenticationFilter.class)
         // REST API는 csrf 토큰이 필요 없음 -> 비활성화
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session
@@ -53,15 +45,10 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/**").permitAll() //회원가입, 로그인은 인증 없이 접근 허용
             .requestMatchers("/h2-console/**").permitAll() // h2-console 접근 허용
             .requestMatchers("/api/accounts/**").authenticated()
-            .anyRequest().authenticated()
         )
         // Spring Security 가 인증이나 권한 여부 문제로 요청을 막을 때 줄 응답 정하기
         .exceptionHandling(e -> e
-            .authenticationEntryPoint((request, response, authException) -> {
-              response.setContentType("application/json;charset=UTF-8");
-              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-              response.getWriter().write("{\"error\":\"인증 필요: 로그인하세요.\"}");
-            })
+            .authenticationEntryPoint(customAuthenticationEntryPoint)
             .accessDeniedHandler((request, response, accessDeniedException) -> {
               response.setContentType("application/json;charset=UTF-8");
               response.setStatus(HttpServletResponse.SC_FORBIDDEN);
