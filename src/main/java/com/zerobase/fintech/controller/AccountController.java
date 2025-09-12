@@ -22,7 +22,7 @@ public class AccountController {
   private final AccountService accountService;
 
   //계좌 생성
-  @PostMapping("/create")
+  @PostMapping
   public ResponseEntity<AccountResponse> createAccount() {
     AccountResponse response = accountService.createAccount();
     return ResponseEntity.ok(response);
