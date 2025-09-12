@@ -68,4 +68,11 @@ public class GlobalExceptionHandler {
     body.put("ERROR", e.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
   }
+
+  @ExceptionHandler(AccountNotFoundException.class)
+  public ResponseEntity<Map<String, String>> handlerAccountNotFoundException(AccountNotFoundException e) {
+    Map<String, String> body = new HashMap<>();
+    body.put("ERROR", e.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+  }
 }

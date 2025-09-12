@@ -12,6 +12,7 @@ import com.zerobase.fintech.exception.InvalidCredentialsException;
 import com.zerobase.fintech.exception.PhoneNumberAlreadyUsedException;
 import com.zerobase.fintech.exception.UserAlreadyExistsException;
 import com.zerobase.fintech.exception.UserNotFoundException;
+import com.zerobase.fintech.exception.UserNotLoggedInException;
 import com.zerobase.fintech.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,6 +35,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
+
+  public Member getCurrentMember() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null
+        || !authentication.isAuthenticated()
+        || authentication instanceof AnonymousAuthenticationToken) {
+      throw new UserNotLoggedInException();
+    }
+    Object principal = authentication.getPrincipal();
+    if (!(principal instanceof CustomUserDetails)) {
+      throw new UserNotLoggedInException();
+    }
+    CustomUserDetails customUserDetails = (CustomUserDetails) principal;
+    return customUserDetails.getMember();
+  }
 
   @Transactional
   public SignUpResponse register(SignUpRequest request) {
