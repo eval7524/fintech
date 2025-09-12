@@ -13,4 +13,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
   Page<Account> findAllByMemberId(Long memberId, Pageable pageable);
 
   Optional<Account> findByIdAndMemberId(Long accountId, Long memberId);
+
+  Optional<Account> findByAccountNumber(String accountNumber);
 }
