@@ -39,9 +39,16 @@ public class DepositService {
     Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
         .orElseThrow(() -> new AccountNotFoundException());
 
+    if(fromAccount != null) {
+
+      fromAccount.withdraw(request.getAmount());
+      accountRepository.save(fromAccount);
+      log.info("계좌 : {} , 출금 금액 : {}, 잔액 : {} ", fromAccount.getAccountNumber(), request.getAmount(), fromAccount.getBalance());
+    }
 
     toAccount.deposit(request.getAmount());
     accountRepository.save(toAccount);
+    log.info("계좌 : {} , 입금 금액 : {}, 잔액 : {}", toAccount.getAccountNumber(), request.getAmount(), toAccount.getBalance());
 
     Transaction.TransactionBuilder transactionBuilder = Transaction.builder()
         .toAccountId(toAccount)
