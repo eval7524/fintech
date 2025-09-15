@@ -15,8 +15,22 @@ public class TransactionException extends RuntimeException {
 
   public static class InvalidAmountException extends TransactionException {
 
-    public InvalidAmountException(String message) {
-      super(message);
+    public InvalidAmountException() {
+      super("출금 금액은 0보다 크거나, Null이 아니어야 합니다.");
+    }
+  }
+
+  public static class UnAuthorizedException extends TransactionException {
+
+    public UnAuthorizedException() {
+      super("권한이 없습니다.");
+    }
+  }
+
+  public static class InsufficientBalanceException extends TransactionException {
+
+    public InsufficientBalanceException() {
+      super("잔액이 부족합니다.");
     }
   }
 }
