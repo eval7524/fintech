@@ -8,7 +8,7 @@ import com.zerobase.fintech.domain.entity.Account;
 import com.zerobase.fintech.domain.entity.Transaction;
 import com.zerobase.fintech.domain.repository.AccountRepository;
 import com.zerobase.fintech.domain.repository.TransactionRepository;
-import com.zerobase.fintech.exception.AccountNotFoundException;
+import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

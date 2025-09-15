@@ -2,7 +2,6 @@ package com.zerobase.fintech.security;
 
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.domain.repository.MemberRepository;
-import com.zerobase.fintech.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
