@@ -8,7 +8,7 @@ import com.zerobase.fintech.domain.dto.account.AccountResponse;
 import com.zerobase.fintech.domain.entity.Account;
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.domain.repository.AccountRepository;
-import com.zerobase.fintech.exception.AccountNotFoundException;
+import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;

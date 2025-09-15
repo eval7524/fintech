@@ -1,5 +1,12 @@
 package com.zerobase.fintech.exception;
 
+import com.zerobase.fintech.exception.AuthException.InvalidCredentialsException;
+import com.zerobase.fintech.exception.AuthException.PhoneNumberAlreadyUsedException;
+import com.zerobase.fintech.exception.AuthException.MemberAlreadyExistsException;
+import com.zerobase.fintech.exception.AuthException.MemberNotFoundException;
+import com.zerobase.fintech.exception.AuthException.MemberNotLoggedInException;
+import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
+import com.zerobase.fintech.exception.TransactionException.InvalidAmountException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +28,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
   }
 
-  @ExceptionHandler(UserAlreadyExistsException.class)
-  public ResponseEntity<Map<String, String>> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+  @ExceptionHandler(MemberAlreadyExistsException.class)
+  public ResponseEntity<Map<String, String>> handleUserAlreadyExistsException(MemberAlreadyExistsException e) {
     Map<String, String> body = new HashMap<>();
     body.put("ERROR", e.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
@@ -48,8 +55,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(body);
   }
 
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<Map<String, String>> handlerUserNotFoundException(UserNotFoundException e) {
+  @ExceptionHandler(MemberNotFoundException.class)
+  public ResponseEntity<Map<String, String>> handlerUserNotFoundException(MemberNotFoundException e) {
     Map<String, String> body = new HashMap<>();
     body.put("ERROR", e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
@@ -62,8 +69,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
   }
 
-  @ExceptionHandler(UserNotLoggedInException.class)
-  public ResponseEntity<Map<String, String>> handlerUserNotLoggedInException(UserNotLoggedInException e) {
+  @ExceptionHandler(MemberNotLoggedInException.class)
+  public ResponseEntity<Map<String, String>> handlerUserNotLoggedInException(MemberNotLoggedInException e) {
     Map<String, String> body = new HashMap<>();
     body.put("ERROR", e.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);

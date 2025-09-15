@@ -8,11 +8,11 @@ import com.zerobase.fintech.domain.dto.login.LoginResponse;
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.domain.entity.Role;
 import com.zerobase.fintech.domain.repository.MemberRepository;
-import com.zerobase.fintech.exception.InvalidCredentialsException;
-import com.zerobase.fintech.exception.PhoneNumberAlreadyUsedException;
-import com.zerobase.fintech.exception.UserAlreadyExistsException;
-import com.zerobase.fintech.exception.UserNotFoundException;
-import com.zerobase.fintech.exception.UserNotLoggedInException;
+import com.zerobase.fintech.exception.AuthException.InvalidCredentialsException;
+import com.zerobase.fintech.exception.AuthException.PhoneNumberAlreadyUsedException;
+import com.zerobase.fintech.exception.AuthException.MemberAlreadyExistsException;
+import com.zerobase.fintech.exception.AuthException.MemberNotFoundException;
+import com.zerobase.fintech.exception.AuthException.MemberNotLoggedInException;
 import com.zerobase.fintech.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,11 +41,11 @@ public class AuthService {
     if (authentication == null
         || !authentication.isAuthenticated()
         || authentication instanceof AnonymousAuthenticationToken) {
-      throw new UserNotLoggedInException();
+      throw new MemberNotLoggedInException();
     }
     Object principal = authentication.getPrincipal();
     if (!(principal instanceof CustomUserDetails)) {
-      throw new UserNotLoggedInException();
+      throw new MemberNotLoggedInException();
     }
     CustomUserDetails customUserDetails = (CustomUserDetails) principal;
     return customUserDetails.getMember();
@@ -56,7 +56,7 @@ public class AuthService {
     log.info("회원가입 서비스 호출 : username = {}", request.getUsername());
     if(memberRepository.findByUsername(request.getUsername()).isPresent()) {
       log.warn("아이디명 = {} 은 이미 사용중인 아이디입니다.", request.getUsername());
-      throw new UserAlreadyExistsException();
+      throw new MemberAlreadyExistsException();
     }
 
     if(memberRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
@@ -93,7 +93,7 @@ public class AuthService {
     }
 
     Member member = memberRepository.findByUsername(request.getUsername())
-        .orElseThrow(() -> new UserNotFoundException());
+        .orElseThrow(() -> new MemberNotFoundException());
 
     if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
       log.warn("비밀번호 불일치 : username = {}", request.getUsername());

@@ -1,7 +1,7 @@
 package com.zerobase.fintech.domain.entity;
 
 
-import com.zerobase.fintech.exception.InvalidAmountException;
+import com.zerobase.fintech.exception.TransactionException.InvalidAmountException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
