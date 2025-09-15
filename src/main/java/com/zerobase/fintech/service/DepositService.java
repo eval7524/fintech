@@ -6,7 +6,6 @@ import com.zerobase.fintech.domain.dto.deposit.DepositRequest;
 import com.zerobase.fintech.domain.dto.deposit.DepositResponse;
 import com.zerobase.fintech.domain.entity.Account;
 import com.zerobase.fintech.domain.entity.Transaction;
-import com.zerobase.fintech.domain.entity.TransactionType;
 import com.zerobase.fintech.domain.repository.AccountRepository;
 import com.zerobase.fintech.domain.repository.TransactionRepository;
 import com.zerobase.fintech.exception.AccountNotFoundException;
@@ -48,7 +47,7 @@ public class DepositService {
         .build();
 
     transactionRepository.save(transaction);
-    log.info("입금 거래 내역 저장 완료 toAccountNumber = {}, amount = {}, type = {} ", toAccount.getAccountNumber(), request.getAmount(), DEPOSIT);
+    log.info("입금 거래 내역 저장 완료 계좌 번호 = {}, 금액 = {}, 일시 = {}", toAccount.getAccountNumber(),request.getAmount() ,transaction.getTimestamp());
     return new DepositResponse(request.getToAccountNumber(), request.getAmount(), transaction.getTimestamp());
   }
 }
