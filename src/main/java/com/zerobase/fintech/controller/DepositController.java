@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/api/deposits")
 @RequiredArgsConstructor
 public class DepositController {
 
   private final DepositService depositService;
 
-  @PostMapping("/deposits")
+  @PostMapping()
   public ResponseEntity<DepositResponse> deposit(@RequestBody DepositRequest request) {
     DepositResponse response = depositService.deposit(request);
     return ResponseEntity.ok(response);

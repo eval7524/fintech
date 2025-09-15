@@ -33,6 +33,8 @@ public class TransferService {
     Account fromAccount = accountRepository.findById(fromAccountId)
         .orElseThrow(() -> new AccountNotFoundException());
 
+    log.info("이체 시도 출금 계좌 : {}, 입금 계좌 : {}, 금액 : {}", fromAccount.getAccountNumber(), request.getToAccountNumber(), request.getAmount());
+
     if (!fromAccount.getMember().getId().equals(member.getId())) {
       log.error("본인 소유의 계좌가 아닙니다.");
       throw new UnAuthorizedException();
