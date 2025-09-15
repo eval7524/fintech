@@ -75,4 +75,11 @@ public class GlobalExceptionHandler {
     body.put("ERROR", e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
   }
+
+  @ExceptionHandler(InvalidAmountException.class)
+  public ResponseEntity<Map<String, String>> handlerInvalidAmountException(InvalidAmountException e) {
+    Map<String, String> body = new HashMap<>();
+    body.put("ERROR", e.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+  }
 }
