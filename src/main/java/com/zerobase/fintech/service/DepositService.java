@@ -1,5 +1,7 @@
 package com.zerobase.fintech.service;
 
+import static com.zerobase.fintech.domain.entity.TransactionType.*;
+
 import com.zerobase.fintech.domain.dto.deposit.DepositRequest;
 import com.zerobase.fintech.domain.dto.deposit.DepositResponse;
 import com.zerobase.fintech.domain.entity.Account;
@@ -24,51 +26,29 @@ public class DepositService {
 
 
   /**
-   * 입금 대상 AccountNumber, 입금 금액 amount 계좌번호 유효성 검사 (실재하는지)
+   * 입금 대상 AccountNumber, 입금 금액 amount 계좌번호 유효성 검사
+   * "무통장 입금"
    */
 
 
-  //입금 기능 구현
+  //무통장 입금 기능 구현
   @Transactional
   public DepositResponse deposit(DepositRequest request) {
-    Account fromAccount = null;
-    if (request.getFromAccountNumber() != null && !request.getFromAccountNumber().isEmpty()) {
-      fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
-          .orElseThrow(() -> new AccountNotFoundException());
-    }
     Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
         .orElseThrow(() -> new AccountNotFoundException());
-
-    if(fromAccount != null) {
-
-      fromAccount.withdraw(request.getAmount());
-      accountRepository.save(fromAccount);
-      log.info("계좌 : {} , 출금 금액 : {}, 잔액 : {} ", fromAccount.getAccountNumber(), request.getAmount(), fromAccount.getBalance());
-    }
-
+    log.info("입금 대상 계좌 조회 완료 toAccountNumber = {}", toAccount.getAccountNumber());
     toAccount.deposit(request.getAmount());
-    accountRepository.save(toAccount);
-    log.info("계좌 : {} , 입금 금액 : {}, 잔액 : {}", toAccount.getAccountNumber(), request.getAmount(), toAccount.getBalance());
+    log.info("입금 처리 완료 toAccountNumber = {}, amount = {}", toAccount.getAccountNumber(), request.getAmount());
 
-    Transaction.TransactionBuilder transactionBuilder = Transaction.builder()
+    Transaction transaction = Transaction.builder()
         .toAccountId(toAccount)
         .amount(request.getAmount())
-        .type(TransactionType.DEPOSIT)
-        .timestamp(LocalDateTime.now());
+        .timestamp(LocalDateTime.now())
+        .type(DEPOSIT)
+        .build();
 
-    if(fromAccount != null) {
-      transactionBuilder.fromAccountId(fromAccount);
-    }
-
-    Transaction transaction = transactionBuilder.build();
     transactionRepository.save(transaction);
-
-
-    DepositResponse depositResponse = new DepositResponse();
-    depositResponse.setToAccountNumber(toAccount.getAccountNumber());
-    depositResponse.setAmount(request.getAmount());
-    depositResponse.setTimestamp(transaction.getTimestamp());
-
-    return depositResponse;
+    log.info("입금 거래 내역 저장 완료 toAccountNumber = {}, amount = {}, type = {} ", toAccount.getAccountNumber(), request.getAmount(), DEPOSIT);
+    return new DepositResponse(request.getToAccountNumber(), request.getAmount(), transaction.getTimestamp());
   }
 }
