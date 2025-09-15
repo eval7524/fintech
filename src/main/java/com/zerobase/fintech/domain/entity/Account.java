@@ -1,6 +1,8 @@
 package com.zerobase.fintech.domain.entity;
 
 
+import com.zerobase.fintech.exception.TransactionException;
+import com.zerobase.fintech.exception.TransactionException.InsufficientBalanceException;
 import com.zerobase.fintech.exception.TransactionException.InvalidAmountException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,7 +52,7 @@ public class Account {
   //입금
   public void deposit(BigDecimal amount) {
     if (amount == null || amount.compareTo(BigDecimal.valueOf(0.0)) <= 0) {
-      throw new InvalidAmountException("입금 금액은 0보다 크거나, Null이 아니어야 합니다.");
+      throw new InvalidAmountException();
     }
     this.balance = this.balance.add(amount);
   }
@@ -59,10 +61,10 @@ public class Account {
   public void withdraw(BigDecimal amount) {
     if (amount == null || amount.compareTo(BigDecimal.valueOf(0.0)) <= 0) {
       log.error("출금 오류 계좌 : {}", this.accountNumber);
-      throw new InvalidAmountException("출금 금액은 0보다 크거나, Null이 아니어야 합니다.");
+      throw new InvalidAmountException();
     } else if (this.balance.compareTo(amount) < 0) {
       log.error("잔액 부족 계좌 : {}, 잔액 : {}", this.accountNumber, this.balance);
-      throw new InvalidAmountException("잔액이 부족합니다.");
+      throw new InsufficientBalanceException();
     }
     this.balance = this.balance.subtract(amount);
   }

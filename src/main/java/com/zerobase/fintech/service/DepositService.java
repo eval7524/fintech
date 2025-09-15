@@ -37,7 +37,7 @@ public class DepositService {
         .orElseThrow(() -> new AccountNotFoundException());
     log.info("입금 대상 계좌 조회 완료 toAccountNumber = {}", toAccount.getAccountNumber());
     toAccount.deposit(request.getAmount());
-    log.info("입금 처리 완료 toAccountNumber = {}, amount = {}", toAccount.getAccountNumber(), request.getAmount());
+    log.info("입금 처리 완료 : 입금 계좌 = {}, 금액 = {}", toAccount.getAccountNumber(), request.getAmount());
 
     Transaction transaction = Transaction.builder()
         .toAccountId(toAccount)
