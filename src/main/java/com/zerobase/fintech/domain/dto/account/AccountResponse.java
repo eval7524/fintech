@@ -16,6 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AccountResponse {
 
+  private Long id;
   private String accountNumber;
   private BigDecimal balance;
   private LocalDateTime createdAt;
@@ -24,6 +25,7 @@ public class AccountResponse {
 
   public static AccountResponse fromEntity(Account account) {
     return new AccountResponse(
+        account.getId(),
         account.getAccountNumber(),
         account.getBalance(),
         account.getCreatedAt(),

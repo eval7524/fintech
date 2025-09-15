@@ -49,7 +49,7 @@ public class AccountService {
     Account savedAccount = accountRepository.save(account);
 
     log.info("계좌 생성 완료 accountNumber = {}, balance = {}", savedAccount.getAccountNumber(), savedAccount.getBalance());
-    return new AccountResponse(savedAccount.getAccountNumber(), savedAccount.getBalance(), savedAccount.getCreatedAt(),
+    return new AccountResponse(savedAccount.getId(), savedAccount.getAccountNumber(), savedAccount.getBalance(), savedAccount.getCreatedAt(),
         savedAccount.getMember().getName(), savedAccount.getMember().getId());
   }
 
