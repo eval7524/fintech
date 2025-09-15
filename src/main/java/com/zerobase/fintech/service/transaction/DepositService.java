@@ -1,4 +1,4 @@
-package com.zerobase.fintech.service;
+package com.zerobase.fintech.service.transaction;
 
 import static com.zerobase.fintech.domain.entity.TransactionType.*;
 
@@ -40,7 +40,7 @@ public class DepositService {
     log.info("입금 처리 완료 : 입금 계좌 = {}, 금액 = {}", toAccount.getAccountNumber(), request.getAmount());
 
     Transaction transaction = Transaction.builder()
-        .toAccountId(toAccount)
+        .toAccount(toAccount)
         .amount(request.getAmount())
         .timestamp(LocalDateTime.now())
         .type(DEPOSIT)

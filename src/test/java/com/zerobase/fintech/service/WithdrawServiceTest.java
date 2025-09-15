@@ -17,6 +17,7 @@ import com.zerobase.fintech.domain.repository.TransactionRepository;
 import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
 import com.zerobase.fintech.exception.TransactionException.InsufficientBalanceException;
 import com.zerobase.fintech.exception.TransactionException.UnAuthorizedException;
+import com.zerobase.fintech.service.transaction.WithdrawService;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

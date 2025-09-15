@@ -1,4 +1,4 @@
-package com.zerobase.fintech.service;
+package com.zerobase.fintech.service.transaction;
 
 
 import static com.zerobase.fintech.domain.entity.TransactionType.*;
@@ -12,6 +12,7 @@ import com.zerobase.fintech.domain.repository.AccountRepository;
 import com.zerobase.fintech.domain.repository.TransactionRepository;
 import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
 import com.zerobase.fintech.exception.TransactionException.UnAuthorizedException;
+import com.zerobase.fintech.service.AuthService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +51,8 @@ public class TransferService {
     log.info("이체 완료 : 출금 계좌 = {}, 입금 계좌 = {}, 금액 = {}, 출금 계좌 잔액 = {}", fromAccount.getAccountNumber(), toAccount.getAccountNumber(), request.getAmount(), fromAccount.getBalance());
 
     Transaction transaction = Transaction.builder()
-        .fromAccountId(fromAccount)
-        .toAccountId(toAccount)
+        .fromAccount(fromAccount)
+        .toAccount(toAccount)
         .amount(request.getAmount())
         .type(TRANSFER)
         .timestamp(LocalDateTime.now())

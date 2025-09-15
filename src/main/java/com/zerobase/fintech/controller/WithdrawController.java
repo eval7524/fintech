@@ -2,7 +2,7 @@ package com.zerobase.fintech.controller;
 
 import com.zerobase.fintech.domain.dto.withdraw.WithdrawRequest;
 import com.zerobase.fintech.domain.dto.withdraw.WithdrawResponse;
-import com.zerobase.fintech.service.WithdrawService;
+import com.zerobase.fintech.service.transaction.WithdrawService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

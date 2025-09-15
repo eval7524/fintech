@@ -1,4 +1,4 @@
-package com.zerobase.fintech.service;
+package com.zerobase.fintech.service.transaction;
 
 import static com.zerobase.fintech.domain.entity.TransactionType.*;
 
@@ -7,12 +7,11 @@ import com.zerobase.fintech.domain.dto.withdraw.WithdrawResponse;
 import com.zerobase.fintech.domain.entity.Account;
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.domain.entity.Transaction;
-import com.zerobase.fintech.domain.entity.TransactionType;
 import com.zerobase.fintech.domain.repository.AccountRepository;
 import com.zerobase.fintech.domain.repository.TransactionRepository;
-import com.zerobase.fintech.exception.TransactionException;
 import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
 import com.zerobase.fintech.exception.TransactionException.UnAuthorizedException;
+import com.zerobase.fintech.service.AuthService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +43,7 @@ public class WithdrawService {
     account.withdraw(request.getAmount());
     log.info("출금 처리 완료 계좌번호 = {}, 금액 = {}, 잔액 = {}", account.getAccountNumber(), request.getAmount(), account.getBalance());
     Transaction transaction = Transaction.builder()
-        .fromAccountId(account)
+        .fromAccount(account)
         .amount(request.getAmount())
         .type(WITHDRAW)
         .timestamp(LocalDateTime.now())
