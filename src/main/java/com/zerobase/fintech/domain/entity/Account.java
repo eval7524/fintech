@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Getter
 @ToString
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {

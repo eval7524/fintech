@@ -21,12 +21,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     String uri = request.getRequestURI();
     String method = request.getMethod();
+    String[] parts = uri.split("/");
+    String lastMethod = parts[parts.length - 1];
 
     if (uri.startsWith("/api/accounts")) {
-      if(method == "POST") {
+      if(uri.equals("/api/accounts") && method.equals("POST")) {
         log.warn("비로그인 사용자 계좌 생성 시도 : uri = {}, method = {}", uri, method);
-      } else if (method == "GET") {
+      } else if (uri.equals("/api/accounts") && method.equals("GET")) {
         log.warn("비로그인 사용자 계좌 조회 시도 : uri = {}, method = {}", uri, method);
+      } else if ("transfers".equals(lastMethod) && method.equals("POST")) {
+        log.warn("비로그인 사용자 계좌 이체 시도 : uri = {}, method = {}", uri, method);
+      } else if ("withdraws".equals(lastMethod) && method.equals("POST")) {
+        log.warn("비로그인 사용자 계좌 출금 시도 : uri = {}, method = {}", uri, method);
       } else {
         log.warn("비로그인 사용자 알 수 없는 요청 시도 : uri = {}, method = {}", uri, method);
       }

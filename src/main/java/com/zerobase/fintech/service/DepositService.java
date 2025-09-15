@@ -35,7 +35,7 @@ public class DepositService {
   public DepositResponse deposit(DepositRequest request) {
     Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
         .orElseThrow(() -> new AccountNotFoundException());
-    log.info("입금 대상 계좌 조회 완료 toAccountNumber = {}", toAccount.getAccountNumber());
+    log.info("입금 대상 계좌 조회 완료 : 입금 대상 계좌 = {}", toAccount.getAccountNumber());
     toAccount.deposit(request.getAmount());
     log.info("입금 처리 완료 : 입금 계좌 = {}, 금액 = {}", toAccount.getAccountNumber(), request.getAmount());
 

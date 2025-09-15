@@ -7,7 +7,6 @@ import lombok.Data;
 
 @Data
 public class DepositRequest {
-  private String fromAccountNumber;
   private String toAccountNumber;
   private BigDecimal amount;
 }
