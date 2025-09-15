@@ -17,6 +17,7 @@ import com.zerobase.fintech.domain.repository.AccountRepository;
 import com.zerobase.fintech.domain.repository.TransactionRepository;
 import com.zerobase.fintech.exception.TransactionException.AccountNotFoundException;
 import com.zerobase.fintech.exception.TransactionException.InvalidAmountException;
+import com.zerobase.fintech.service.transaction.DepositService;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

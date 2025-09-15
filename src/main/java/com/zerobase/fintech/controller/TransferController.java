@@ -2,7 +2,7 @@ package com.zerobase.fintech.controller;
 
 import com.zerobase.fintech.domain.dto.transfer.TransferRequest;
 import com.zerobase.fintech.domain.dto.transfer.TransferResponse;
-import com.zerobase.fintech.service.TransferService;
+import com.zerobase.fintech.service.transaction.TransferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

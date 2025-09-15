@@ -32,11 +32,11 @@ public class Transaction {
 
   @ManyToOne
   @JoinColumn(name = "from_account_id", nullable = true)
-  private Account fromAccountId;
+  private Account fromAccount;
 
   @ManyToOne
   @JoinColumn(name = "to_account_id")
-  private Account toAccountId;
+  private Account toAccount;
 
   @Column(nullable = false)
   private BigDecimal amount;
