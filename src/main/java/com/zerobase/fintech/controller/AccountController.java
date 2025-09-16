@@ -3,6 +3,7 @@ package com.zerobase.fintech.controller;
 import com.zerobase.fintech.domain.dto.account.AccountResponse;
 import com.zerobase.fintech.domain.entity.Member;
 import com.zerobase.fintech.service.AccountService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.security.auth.login.AccountNotFoundException;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/accounts")
 @lombok.RequiredArgsConstructor
+@Tag(name = "Account", description = "Account API")
 public class AccountController {
 
   private final AccountService accountService;

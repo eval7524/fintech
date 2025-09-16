@@ -3,6 +3,7 @@ package com.zerobase.fintech.controller;
 import com.zerobase.fintech.domain.dto.deposit.DepositRequest;
 import com.zerobase.fintech.domain.dto.deposit.DepositResponse;
 import com.zerobase.fintech.service.transaction.DepositService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/deposits")
 @RequiredArgsConstructor
+@Tag(name = "Transaction", description = "Transaction API")
 public class DepositController {
 
   private final DepositService depositService;

@@ -45,6 +45,7 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/**").permitAll() //회원가입, 로그인은 인증 없이 접근 허용
             .requestMatchers("/h2-console/**").permitAll() // h2-console 접근 허용
             .requestMatchers("/api/deposits").permitAll() // 무통장 입금의 경우 ATM 기기에서 인증 없이 입금 요청 가능
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll() // Swagger 허용
             .requestMatchers("/api/accounts/**").authenticated() // 계좌 CRUD 는 인증 필요
         )
         // Spring Security 가 인증이나 권한 여부 문제로 요청을 막을 때 줄 응답 정하기
