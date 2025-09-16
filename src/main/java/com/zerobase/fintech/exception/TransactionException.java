@@ -16,7 +16,7 @@ public class TransactionException extends RuntimeException {
   public static class InvalidAmountException extends TransactionException {
 
     public InvalidAmountException() {
-      super("출금 금액은 0보다 크거나, Null이 아니어야 합니다.");
+      super("입,출금 금액은 0보다 크거나, Null이 아니어야 합니다.");
     }
   }
 

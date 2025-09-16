@@ -5,6 +5,7 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 import com.zerobase.fintech.domain.dto.transaction.TransactionHistoryResponse;
 import com.zerobase.fintech.domain.entity.TransactionType;
 import com.zerobase.fintech.service.transaction.TransactionHistoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/accounts/{accountId}/transactions")
 @RequiredArgsConstructor
+@Tag(name = "Transaction", description = "Transaction API")
 public class TransactionController {
 
   private final TransactionHistoryService transactionHistoryService;

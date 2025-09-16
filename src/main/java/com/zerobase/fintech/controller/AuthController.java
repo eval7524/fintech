@@ -4,6 +4,7 @@ import com.zerobase.fintech.domain.dto.auth.SignUpRequest;
 import com.zerobase.fintech.domain.dto.auth.SignUpResponse;
 import com.zerobase.fintech.domain.dto.login.LoginRequest;
 import com.zerobase.fintech.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Authentication API")
 public class AuthController {
 
   private final AuthService authService;
