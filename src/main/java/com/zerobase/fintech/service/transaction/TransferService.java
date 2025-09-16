@@ -66,7 +66,7 @@ public class TransferService {
         .fromAccountNumber(fromAccount.getAccountNumber())
         .toAccountNumber(toAccount.getAccountNumber())
         .amount(request.getAmount())
-        .balance(fromAccount.getBalance())
+        .fromAccountBalance(fromAccount.getBalance())
         .timestamp(transaction.getTimestamp())
         .build();
 

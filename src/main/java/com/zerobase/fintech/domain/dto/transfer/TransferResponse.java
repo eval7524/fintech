@@ -16,7 +16,7 @@ public class TransferResponse {
   private String fromAccountNumber;
   private String toAccountNumber;
   private BigDecimal amount;
-  private BigDecimal balance;
+  private BigDecimal fromAccountBalance;
   private LocalDateTime timestamp;
 
 }
