@@ -28,7 +28,7 @@ public class TransferService {
   private final AccountRepository accountRepository;
   private final TransactionRepository transactionRepository;
 
-  @Transactional
+  @Transactional(timeout = 5)
   public TransferResponse transfer(Long fromAccountId, TransferRequest request) {
     Member member = authService.getCurrentMember();
     Account fromAccount = accountRepository.findById(fromAccountId)
@@ -45,9 +45,12 @@ public class TransferService {
         .orElseThrow(() -> new AccountNotFoundException());
     log.info("입출금 계좌 조회 완료 : 출금 계좌 = {}, 입금 계좌 = {}", fromAccount.getAccountNumber(), toAccount.getAccountNumber());
 
+    Account first = fromAccount.getId() < toAccount.getId() ? fromAccount : toAccount;
+    Account second = fromAccount.getId() < toAccount.getId() ? toAccount : fromAccount;
+
     log.info("이체 시도 : 출금 계좌 = {}, 입금 계좌 = {}, 금액 = {}", fromAccount.getAccountNumber(), toAccount.getAccountNumber(), request.getAmount());
-    fromAccount.withdraw(request.getAmount());
-    toAccount.deposit(request.getAmount());
+    first.withdraw(request.getAmount());
+    second.deposit(request.getAmount());
     log.info("이체 완료 : 출금 계좌 = {}, 입금 계좌 = {}, 금액 = {}, 출금 계좌 잔액 = {}", fromAccount.getAccountNumber(), toAccount.getAccountNumber(), request.getAmount(), fromAccount.getBalance());
 
     Transaction transaction = Transaction.builder()
