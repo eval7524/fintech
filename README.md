@@ -57,7 +57,8 @@
 
 
 ## ERD
-<img width="629" height="577" alt="스크린샷 2025-09-06 오전 2 18 35" src="https://github.com/user-attachments/assets/5c67a5c0-650b-4414-9f25-f25f9cc74de4" />
+<img width="532" height="1218" alt="스크린샷 2025-09-30 오후 7 09 23" src="https://github.com/user-attachments/assets/ae0c9eef-0008-4f58-8f7f-a6822cc4a7b7" />
+
 
 
 ### TECH STACK
